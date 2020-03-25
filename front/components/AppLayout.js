@@ -5,25 +5,23 @@ import LoginForm from './LoginForm';
 import { Menu, Input, Row, Col, Card, Avatar, Button, Form } from 'antd';
 import UserProfile from './UserProfile';
 import { useSelector, useDispatch } from 'react-redux';
-// import { LOAD_USER_REQUEST } from '../reducers/user';
+import { LOAD_USER_REQUEST } from '../reducers/user';
 
 const AppLayout = (props) => {
-    // const { me } = useSelector(state => state.user);
-    // const dispatch = useDispatch();
-    // useEffect(() => {
-    //     if (!me) {
-    //         dispatch({
-    //             // 쿠키로 정보 불러오게
-    //             type : LOAD_USER_REQUEST,
-    //         });
-    //     }
-    // }, []);
+    const { me } = useSelector(state => state.user);
+    const dispatch = useDispatch();
+    useEffect(() => {
+        if (!me) {
+            dispatch({
+                // 쿠키로 정보 불러오게
+                type : LOAD_USER_REQUEST,
+            });
+        }
+    }, []);
 
     const {
         children
     } = props;
-    
-    const {isLoggedIn} = useSelector(state => state.user);
     return (
         <div>
             <Menu mode="horizontal">
@@ -35,18 +33,11 @@ const AppLayout = (props) => {
             </Menu>
             <Row gutter = {20}>
                 <Col xs={24} md={6}>
-                    {/* {me ?
-                    <UserProfile/>
-                    :
-                    <LoginForm/>
-                    } */}
-                    {/* 이 파트는 2강 따라하면서 넣은 부분 */}
-                    {isLoggedIn ?
+                    {me ?
                     <UserProfile/>
                     :
                     <LoginForm/>
                     }
-                    {/* 따라하면서 넣은 부분! */}
                 </Col>
                 <Col xs={24} md={12}>
                     {children}

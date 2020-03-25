@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Post.associate = (db) => {
         // 연결되는 부분들을 여기에 저장할 예정 belongsTo는 사용자에게 속해있다라는 뜻 hasMany는 게시글이 이미지나 댓글을 많이 갖고 있다
-        db.Post.belongsTo(db.User); //테이블에 UserId 컬럼이 생김 post는 user에게 속해있다!
+        db.Post.belongsTo(db.User); //뒤에 id 붙여서 테이블에 UserId 컬럼이 생김! post는 user에게 속해있다!
         db.Post.hasMany(db.Comment); //게시글은 댓글을 많이 가지고 있다
         db.Post.hasMany(db.Image);
         db.Post.belongsTo(db.Post, { as : 'Retweet' }); //리트윗 관계 둘 다 Post라 이름 구별 안 갈때는 as로 이름을 지어준다!!!! RetweetId 컬럼이 생김

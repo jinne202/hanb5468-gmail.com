@@ -6,6 +6,12 @@ const db = require('../models');
 const router = express.Router();
 
 router.get('/', (req, res) => {
+    if (!req.user) {
+        return res.status(401).send('로그인이 필요합니다');
+    };
+    const user = Object.assign({}, req.user.toJSON());
+    delete user.password;
+    return res.json(user);
 });
 
 router.post('/', async (req, res, next) => { //POST /api/user/ = 회원가입
@@ -37,6 +43,9 @@ router.get('/:id', (req, res) => { //req.params.id 로 가져올 수 있음 id�
 });
 
 router.post('/logout', (req, res) => {
+    req.logout();
+    req.session.destroy();
+    res.send('logout 성공');
 });
 
 router.post('/login', (req, res, next) => { //passport 전략 여기서 실행
@@ -53,28 +62,30 @@ router.post('/login', (req, res, next) => { //passport 전략 여기서 실행
                 if (loginErr) {
                     return next(loginErr);
                 }
-                // const fullUser = await db.User.findOne({
-                //     where : { id : user.id },
-                //     // 포스팅 수, 팔로워 수 등
-                //     include : [{
-                //         model : db.Post,
-                //         as : 'Posts',
-                //         // attrbutes 라는 속성으로 필터링 가능
-                //         attributes : ['id'],
-                //     }, {
-                //         model : db.User,
-                //         as : 'Followings',
-                //         attributes : ['id'],
-                //     }, {
-                //         model : db.User,
-                //         as : 'Followers',
-                //         attributes : ['id'],
-                //     }],
-                //     attributes : ['id', 'nickname', 'userId'],
-                // });
-                const filteredUser = Object.assign({}, user.toJSON()); //여기 user은 passport 폴더의 local 안의 const user 순수한 json으로 만들기 위해 사용
-                delete filteredUser.password;
-                return res.json(filteredUser);
+                const fullUser = await db.User.findOne({
+                    where : { id : user.id },
+                    // 포스팅 수, 팔로워 수 등 로그인한 사용자 정보를 보내면서 팔로잉, 팔로워, 포스트 수 등을 같이 보내기 위해서 include를 사용
+                    include : [{
+                        model : db.Post,
+                        as : 'Posts',
+                        // attrbutes 라는 속성으로 필터링 가능
+                        attributes : ['id'],
+                    }, {
+                        model : db.User,
+                        as : 'Followings',
+                        attributes : ['id'],
+                    }, {
+                        model : db.User,
+                        as : 'Followers',
+                        attributes : ['id'],
+                    }],
+                    // 사용자 정보는 비밀번호를 빼고 보낸다
+                    attributes : ['id', 'nickname', 'userId'],
+                });
+                // const filteredUser = Object.assign({}, user.toJSON()); //여기 user은 passport 폴더의 local 안의 const user 순수한 json으로 만들기 위해 사용
+                // delete filteredUser.password;
+                console.log(fullUser);
+                return res.json(fullUser);
             } catch (e) {
                 next(e);
             }

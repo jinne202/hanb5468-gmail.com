@@ -10,7 +10,6 @@ const dummyUser = {
 
 // 유저 정보들만 담고 있는 sotre 안에 초기값을 넣어준다.
 export const initialState = {
-    isLoggedIn : false, //로그인 여부
     isLoggingOut : false, //로그아웃 시도중
     isLoggingIn : false, //로그인 시도중
     logInErrorReason : '', //로그인 에러 사유
@@ -83,7 +82,6 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 isLoadng : false,
-                isLoggedIn : true,
                 me : action.data,
                 isLoggingIn : false,
             }
@@ -92,7 +90,6 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 isLoadng : false,
-                isLoggedIn : false,
                 isLoggingIn : false,
                 logInErrorReason : action.error,
                 me : null,
@@ -101,8 +98,14 @@ const reducer = (state = initialState, action) => {
         case LOG_OUT_REQUEST : {
             return {
                 ...state,
-                isLoggedIn : false,
-                user : null,
+                isLoggingOut : true,
+            }
+        }
+        case LOG_OUT_SUCCESS : {
+            return {
+                ...state,
+                isLoggingOut : false,
+                me : null,
             }
         }
         case SIGN_UP_REQUEST : {
@@ -124,6 +127,22 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 isSigningUp : false,
                 signUpErrorReason : action.error,
+            }
+        }
+        case LOAD_USER_REQUEST : {
+            return {
+                ...state,
+            };
+        }
+        case LOAD_USER_SUCCESS : {
+            return {
+                ...state,
+                me: action.data,
+            };
+        }
+        case LOAD_USER_FAILURE : {
+            return {
+                ...state,
             }
         }
         default : {

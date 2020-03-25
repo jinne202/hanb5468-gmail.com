@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         db.User.hasMany(db.Comment);
         // as로 구별 구별 ^.^ belongsToMany는 되도록 as를 다 달아두도록 하자
         db.User.belongsToMany(db.Post, { through : 'Like', as : 'Liked' });
-        // foreignKey - db에서 구별하는 id
+        // foreignKey - db에서 구별하는 컬럼 id
         db.User.belongsToMany(db.User, { through : 'Follow', as : 'Followers', foreignKey: 'followingId' });
         db.User.belongsToMany(db.User, { through : 'Follow', as : 'Followings', foreignKey: 'followerId'});
     };

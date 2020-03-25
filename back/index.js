@@ -18,7 +18,11 @@ db.sequelize.sync();
 passportConfig();
 
 app.use(morgan('dev'));
-app.use(cors());
+// cors 이 부분이 새로고침해도 도메인 연결 풀리지 않게 하는거
+app.use(cors({
+    origin : true,
+    credentials : true,
+}));
 // json 형식의 본문 처리
 app.use(express.json());
 // form으로 넘어온 데이터 처리
