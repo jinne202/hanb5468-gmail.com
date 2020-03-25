@@ -1,13 +1,5 @@
 export const initialState = {
-    mainPosts : [{
-        User : {
-          id : 1,
-          nickname : 'JINNE',
-        },
-        content : '>_<',
-        img : '',
-        Comments: [],
-    }],
+    mainPosts : [],
     imagePaths : [],
     addPostErrorReason : false , //포스트 업로드 실패 사유
     isAddingPost : false, //포스트 업로드 중
@@ -16,26 +8,6 @@ export const initialState = {
     addCommentErrorReason : '',
     commentAdded : false,
 };
-
-const dummyPost = {
-    id : 2,
-    User : {
-        id : 1,
-        nickname : 'JINNE',
-    },
-    content : '레드벨벳 - 덤덤!',
-    Comments: [],
-}
-
-const dummyComment = {
-    id : 1,
-    User : {
-        id : 1,
-        nickname : 2,
-    },
-    createdAt : new Date(),
-    content : '덤덤덤덤덤덤덤ㄷ멈 덤덤덤덤 깁미깁미댓'
-}
 
 export const LOAD_MAIN_POST_REQUEST = 'LOAD_MAIN_POST_REQUEST';
 export const LOAD_MAIN_POST_SUCCESS = 'LOAD_MAIN_POST_SUCCESS';
@@ -125,7 +97,7 @@ const reducer = (state = initialState, action) => {
         case ADD_COMMENT_SUCCESS : {
             const postIndex = state.mainPosts.findIndex(v => v.id === action.data.postId);
             const post = state.mainPosts[postIndex];
-            const Comments = [...post.Comments, dummyComment];
+            const Comments = [...post.Comments, action.data.comment];
             const mainPosts = [...state.mainPosts];
             mainPosts[postIndex] = {...post, Comments};
             return {

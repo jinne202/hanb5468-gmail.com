@@ -39,7 +39,7 @@ router.post('/', async (req, res, next) => { //POST /api/user/ = 회원가입
     }
 });
 
-router.get('/:id', (req, res) => { //req.params.id 로 가져올 수 있음 id가 n인 유저정보 가져오겠다
+router.get('/:id', (req, res) => { //req.params.id 로 가져올 수 있음 id가 n인 유저정보 가져오겠다 동적으로 변할 수 있는 데이터들!
 });
 
 router.post('/logout', (req, res) => {

@@ -2690,15 +2690,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 const initialState = {
-  mainPosts: [{
-    User: {
-      id: 1,
-      nickname: 'JINNE'
-    },
-    content: '>_<',
-    img: '',
-    Comments: []
-  }],
+  mainPosts: [],
   imagePaths: [],
   addPostErrorReason: false,
   //포스트 업로드 실패 사유
@@ -2709,24 +2701,6 @@ const initialState = {
   isAddingComment: false,
   addCommentErrorReason: '',
   commentAdded: false
-};
-const dummyPost = {
-  id: 2,
-  User: {
-    id: 1,
-    nickname: 'JINNE'
-  },
-  content: '레드벨벳 - 덤덤!',
-  Comments: []
-};
-const dummyComment = {
-  id: 1,
-  User: {
-    id: 1,
-    nickname: 2
-  },
-  createdAt: new Date(),
-  content: '덤덤덤덤덤덤덤ㄷ멈 덤덤덤덤 깁미깁미댓'
 };
 const LOAD_MAIN_POST_REQUEST = 'LOAD_MAIN_POST_REQUEST';
 const LOAD_MAIN_POST_SUCCESS = 'LOAD_MAIN_POST_SUCCESS';
@@ -2807,7 +2781,7 @@ const reducer = (state = initialState, action) => {
       {
         const postIndex = state.mainPosts.findIndex(v => v.id === action.data.postId);
         const post = state.mainPosts[postIndex];
-        const Comments = [...post.Comments, dummyComment];
+        const Comments = [...post.Comments, action.data.comment];
         const mainPosts = [...state.mainPosts];
         mainPosts[postIndex] = _objectSpread({}, post, {
           Comments
