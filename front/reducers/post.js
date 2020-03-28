@@ -93,7 +93,6 @@ const reducer = (state = initialState, action) => {
                 commentAdded : false,
             }
         }
-
         case ADD_COMMENT_SUCCESS : {
             const postIndex = state.mainPosts.findIndex(v => v.id === action.data.postId);
             const post = state.mainPosts[postIndex];
@@ -112,6 +111,17 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 isAddingComment : false,
                 addCommentErrorReason : action.error,
+            }
+        }
+        case LOAD_COMMENT_SUCCESS : {
+            const postIndex = state.mainPosts.findIndex(v => v.id === action.data.postId);
+            const post = state.mainPosts[postIndex];
+            const Comments = action.data.comments;
+            const mainPosts = [...state.mainPosts];
+            mainPosts[postIndex] = {...post, Comments};
+            return {
+                ...state,
+                mainPosts,
             }
         }
         case LOAD_MAIN_POST_REQUEST :
@@ -136,6 +146,28 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
             }
+        }
+        case UPLOAD_IMAGE_REQUEST : {
+            return {
+                ...state,
+            }
+        }
+        case UPLOAD_IMAGE_SUCCESS : {
+            return {
+                ...state,
+                imagePaths : [...state.imagePaths, ...action.data],
+            }
+        }
+        case UPLOAD_IMAGE_FAILURE : {
+            return {
+                ...state,
+            }
+        }
+        case REMOVE_IMAGE : {
+            return {
+                ...state,
+                imagePaths : state.imagePaths.filter((v, i) => i !== action.index),
+            };
         }
         default : {
             return {

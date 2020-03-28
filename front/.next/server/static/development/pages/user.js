@@ -147,9 +147,7 @@ const PostCard = ({
     if (!commentFormOpened) {
       dispatch({
         type: _reducers_post__WEBPACK_IMPORTED_MODULE_5__["LOAD_COMMENT_REQUEST"],
-        data: {
-          postId: post.id
-        }
+        data: post.id
       });
     }
   }, []);
@@ -163,7 +161,8 @@ const PostCard = ({
     return dispatch({
       type: _reducers_post__WEBPACK_IMPORTED_MODULE_5__["ADD_COMMENT_REQUEST"],
       data: {
-        postId: post.id
+        postId: post.id,
+        content: commentText
       }
     });
   }, [me && me.id, commentText]);
@@ -2184,6 +2183,20 @@ const reducer = (state = initialState, action) => {
         });
       }
 
+    case LOAD_COMMENT_SUCCESS:
+      {
+        const postIndex = state.mainPosts.findIndex(v => v.id === action.data.postId);
+        const post = state.mainPosts[postIndex];
+        const Comments = action.data.comments;
+        const mainPosts = [...state.mainPosts];
+        mainPosts[postIndex] = _objectSpread({}, post, {
+          Comments
+        });
+        return _objectSpread({}, state, {
+          mainPosts
+        });
+      }
+
     case LOAD_MAIN_POST_REQUEST:
     case LOAD_HASHTAG_POSTS_REQUEST:
     case LOAD_USER_POST_REQUEST:
@@ -2207,6 +2220,30 @@ const reducer = (state = initialState, action) => {
     case LOAD_USER_POST_FAILURE:
       {
         return _objectSpread({}, state);
+      }
+
+    case UPLOAD_IMAGE_REQUEST:
+      {
+        return _objectSpread({}, state);
+      }
+
+    case UPLOAD_IMAGE_SUCCESS:
+      {
+        return _objectSpread({}, state, {
+          imagePaths: [...state.imagePaths, ...action.data]
+        });
+      }
+
+    case UPLOAD_IMAGE_FAILURE:
+      {
+        return _objectSpread({}, state);
+      }
+
+    case REMOVE_IMAGE:
+      {
+        return _objectSpread({}, state, {
+          imagePaths: state.imagePaths.filter((v, i) => i !== action.index)
+        });
       }
 
     default:

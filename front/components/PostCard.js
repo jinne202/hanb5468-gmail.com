@@ -18,9 +18,7 @@ const PostCard = ({ post }) => {
         if (!commentFormOpened) {
             dispatch({
                 type : LOAD_COMMENT_REQUEST,
-                data : {
-                    postId : post.id,
-                }
+                data : post.id,
             });
         }
     }, []);
@@ -34,6 +32,7 @@ const PostCard = ({ post }) => {
             type : ADD_COMMENT_REQUEST,
             data : {
                 postId : post.id,
+                content : commentText,
             },
         });
     }, [me && me.id, commentText]);
