@@ -1,12 +1,12 @@
 // 유저 정보들만 담고 있는 sotre 안에 초기값을 넣어준다. 이게 초기 state
 
-const dummyUser = {
-    id : 1,
-    nickname : 'JINNE',
-    Post : [],
-    Followings : [],
-    Followers : [],
-}
+// const dummyUser = {
+//     id : 1,
+//     nickname : 'JINNE',
+//     Post : [],
+//     Followings : [],
+//     Followers : [],
+// }
 
 // 유저 정보들만 담고 있는 sotre 안에 초기값을 넣어준다.
 export const initialState = {
@@ -19,7 +19,7 @@ export const initialState = {
     me : null, //내 정보
     followingList : [], //팔로잉 리스트
     followerList : [], //팔로워 리스트
-    userInfo : null,
+    userInfo : null, //남의 정보
 };
 // 여기까지 store
 
@@ -135,10 +135,16 @@ const reducer = (state = initialState, action) => {
             };
         }
         case LOAD_USER_SUCCESS : {
+            if (action.me) {
+                return {
+                    ...state,
+                    me : action.data,
+                };
+            }
             return {
                 ...state,
-                me: action.data,
-            };
+                userInfo : action.data,
+            }
         }
         case LOAD_USER_FAILURE : {
             return {

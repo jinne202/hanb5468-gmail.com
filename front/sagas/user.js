@@ -76,18 +76,19 @@ function* watchLogOut(){
     yield takeEvery(LOG_OUT_REQUEST, logOut);
 }
 
-function loadUserAPI(signUpData){
-    return axios.get('/user/', {
+function loadUserAPI(userId){
+    return axios.get( userId ? `/user/${userId}` : '/user/', {
         withCredentials : true,
     });
 }
 
-function* loadUser(){
+function* loadUser(action){ //자신에 대한 정보 + 남의 정보 같이
     try {
-        const result = yield call(loadUserAPI);
+        const result = yield call(loadUserAPI, action.data);
         yield put({
             type : LOAD_USER_SUCCESS,
             data : result.data,
+            me : !action.data, //action.data가 userId - 만약 userId가 있으면 남, userId가 없으면 내 정보 불러온다
         });
     } catch (e) {
         console.error(e);

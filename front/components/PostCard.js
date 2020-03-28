@@ -61,7 +61,7 @@ const PostCard = ({ post }) => {
                 extra = {<Button>follow</Button>}
             >
             <Card.Meta
-                avatar = {<Avatar>{post.User.nickname[0]}</Avatar>}
+                avatar = {<Link href = {{ pathname : '/user', query : { id : post.User.id } }} as = {`/user/${post.User.id}`}><a><Avatar>{post.User.nickname[0]}</Avatar></a></Link>}
                 title = {post.User.nickname}
                 description = {<div>
                     {post.content.split(/(#[^\s]+)/g).map((v) => {
@@ -69,8 +69,8 @@ const PostCard = ({ post }) => {
                             return (
                                 <Link
                                     href={{ pathname: '/hashtag', query: { tag: v.slice(1) } }}
-                                    // as={`/hashtag/${v.slice(1)}`}
-                                    // key={v}
+                                    as={`/hashtag/${v.slice(1)}`}
+                                    key={v}
                                 >
                                 <a>{v}</a>
                                 </Link>
@@ -96,8 +96,7 @@ const PostCard = ({ post }) => {
                             <li>
                                 <Comment
                                     author = {item.User.nickname}
-                                    // avatar = {<Link href = {{ pathname : '/user', query : { id : item.User.id } }} as = {`/user/${item.User.id}`}><a><Avatar>{item.User.nickname[0]}</Avatar></a></Link>}
-                                    avatar = {<Avatar>{item.User.nickname[0]}</Avatar>}
+                                    avatar = {<Link href = {{ pathname : '/user', query : { id : item.User.id } }} as = {`/user/${item.User.id}`}><a><Avatar>{item.User.nickname[0]}</Avatar></a></Link>}
                                     content = {item.content}
                                 />
                             </li>

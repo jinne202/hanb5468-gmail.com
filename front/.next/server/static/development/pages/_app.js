@@ -2225,7 +2225,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var next_redux_wrapper__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(next_redux_wrapper__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var _reducers__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../reducers */ "./reducers/index.js");
 /* harmony import */ var _sagas__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../sagas */ "./sagas/index.js");
-var _jsxFileName = "C:\\project\\nodebird\\front\\pages\\_app.js";
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
 
 
@@ -2240,57 +2239,43 @@ var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
 
 const NodeBird = ({
   Component,
-  store
+  store,
+  pageProps
 }) => {
   return (// provider이 가장 최상위 부모라 그 아래 자식들이 provider에 접근할 수 있음
     __jsx(react_redux__WEBPACK_IMPORTED_MODULE_4__["Provider"], {
-      store: store,
-      __source: {
-        fileName: _jsxFileName,
-        lineNumber: 15
-      },
-      __self: undefined
-    }, __jsx(next_head__WEBPACK_IMPORTED_MODULE_1___default.a, {
-      __source: {
-        fileName: _jsxFileName,
-        lineNumber: 16
-      },
-      __self: undefined
-    }, __jsx("title", {
-      __source: {
-        fileName: _jsxFileName,
-        lineNumber: 17
-      },
-      __self: undefined
-    }, "NodeBird"), __jsx("link", {
+      store: store
+    }, __jsx(next_head__WEBPACK_IMPORTED_MODULE_1___default.a, null, __jsx("title", null, "NodeBird"), __jsx("link", {
       rel: "stylesheet",
-      href: "https://cdnjs.cloudflare.com/ajax/libs/antd/3.26.9/antd.css",
-      __source: {
-        fileName: _jsxFileName,
-        lineNumber: 18
-      },
-      __self: undefined
-    })), __jsx(_components_AppLayout__WEBPACK_IMPORTED_MODULE_3__["default"], {
-      __source: {
-        fileName: _jsxFileName,
-        lineNumber: 20
-      },
-      __self: undefined
-    }, __jsx(Component, {
-      __source: {
-        fileName: _jsxFileName,
-        lineNumber: 21
-      },
-      __self: undefined
-    })))
+      href: "https://cdnjs.cloudflare.com/ajax/libs/antd/3.26.9/antd.css"
+    })), __jsx(_components_AppLayout__WEBPACK_IMPORTED_MODULE_3__["default"], null, __jsx(Component, pageProps)))
   );
 };
 
 NodeBird.propTypes = {
   Component: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.elementType,
-  store: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object
+  store: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object,
+  pageProps: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired
+}; // next에서 실행시켜주는 부분
+
+NodeBird.getInitialProps = async context => {
+  console.log(context);
+  const {
+    ctx,
+    Component
+  } = context;
+  let pageProps = {};
+
+  if (Component.getInitialProps) {
+    pageProps = await Component.getInitialProps(ctx);
+  }
+
+  return {
+    pageProps
+  };
 }; // 고차 컴포넌트라고 부름 기존 component의 기능을 확장해준다. withRedux라는게 Nodebird component에 props로 store을 넣어주는 역할을 한다. 그 store을 어떻게 넣어줄지를 적어야 함
 // 그냥 외우는게 좋다 어차피 모든 프로젝트에 다 똑같이 쓰인다
+
 
 /* harmony default export */ __webpack_exports__["default"] = (next_redux_wrapper__WEBPACK_IMPORTED_MODULE_7___default()((initialState, options) => {
   const sagaMiddleware = redux_saga__WEBPACK_IMPORTED_MODULE_6___default()(); // 넣고싶은 미들웨어는 [] 여기 안에다가
@@ -2802,6 +2787,8 @@ const reducer = (state = initialState, action) => {
       }
 
     case LOAD_MAIN_POST_REQUEST:
+    case LOAD_HASHTAG_POSTS_REQUEST:
+    case LOAD_USER_POST_REQUEST:
       {
         return _objectSpread({}, state, {
           mainPosts: []
@@ -2809,6 +2796,8 @@ const reducer = (state = initialState, action) => {
       }
 
     case LOAD_MAIN_POST_SUCCESS:
+    case LOAD_HASHTAG_POSTS_SUCCESS:
+    case LOAD_USER_POST_SUCCESS:
       {
         return _objectSpread({}, state, {
           mainPosts: action.data
@@ -2816,6 +2805,8 @@ const reducer = (state = initialState, action) => {
       }
 
     case LOAD_MAIN_POST_FAILURE:
+    case LOAD_HASHTAG_POSTS_FAILURE:
+    case LOAD_USER_POST_FAILURE:
       {
         return _objectSpread({}, state);
       }
@@ -2873,14 +2864,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 // 유저 정보들만 담고 있는 sotre 안에 초기값을 넣어준다. 이게 초기 state
-const dummyUser = {
-  id: 1,
-  nickname: 'JINNE',
-  Post: [],
-  Followings: [],
-  Followers: []
-}; // 유저 정보들만 담고 있는 sotre 안에 초기값을 넣어준다.
-
+// const dummyUser = {
+//     id : 1,
+//     nickname : 'JINNE',
+//     Post : [],
+//     Followings : [],
+//     Followers : [],
+// }
+// 유저 정보들만 담고 있는 sotre 안에 초기값을 넣어준다.
 const initialState = {
   isLoggingOut: false,
   //로그아웃 시도중
@@ -2900,7 +2891,8 @@ const initialState = {
   //팔로잉 리스트
   followerList: [],
   //팔로워 리스트
-  userInfo: null
+  userInfo: null //남의 정보
+
 }; // 여기까지 store
 
 const SIGN_UP_REQUEST = 'SIGN_UP_REQUEST';
@@ -3014,8 +3006,14 @@ const reducer = (state = initialState, action) => {
 
     case LOAD_USER_SUCCESS:
       {
+        if (action.me) {
+          return _objectSpread({}, state, {
+            me: action.data
+          });
+        }
+
         return _objectSpread({}, state, {
-          me: action.data
+          userInfo: action.data
         });
       }
 
@@ -3131,6 +3129,54 @@ function* watchLoadMainPosts() {
   yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["takeLatest"])(_reducers_post__WEBPACK_IMPORTED_MODULE_1__["LOAD_MAIN_POST_REQUEST"], loadMainPosts);
 }
 
+function loadHashtagPostsAPI(tag) {
+  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(`/hashtag/${tag}`);
+}
+
+function* loadHashtagPosts(action) {
+  try {
+    const result = yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["call"])(loadHashtagPostsAPI, action.data);
+    yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["put"])({
+      type: _reducers_post__WEBPACK_IMPORTED_MODULE_1__["LOAD_HASHTAG_POSTS_SUCCESS"],
+      data: result.data
+    });
+  } catch (e) {
+    console.error(e);
+    yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["put"])({
+      type: _reducers_post__WEBPACK_IMPORTED_MODULE_1__["LOAD_HASHTAG_POSTS_FAILURE"],
+      error: e
+    });
+  }
+}
+
+function* watchLoadHashtagPosts() {
+  yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["takeLatest"])(_reducers_post__WEBPACK_IMPORTED_MODULE_1__["LOAD_HASHTAG_POSTS_REQUEST"], loadHashtagPosts);
+}
+
+function loadUserPostsAPI(id) {
+  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(`/user/${id}/posts`);
+}
+
+function* loadUserPosts(action) {
+  try {
+    const result = yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["call"])(loadUserPostsAPI, action.data);
+    yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["put"])({
+      type: _reducers_post__WEBPACK_IMPORTED_MODULE_1__["LOAD_USER_POST_SUCCESS"],
+      data: result.data
+    });
+  } catch (e) {
+    console.error(e);
+    yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["put"])({
+      type: _reducers_post__WEBPACK_IMPORTED_MODULE_1__["LOAD_USER_POST_FAILURE"],
+      error: e
+    });
+  }
+}
+
+function* watchLoadUserPosts() {
+  yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["takeLatest"])(_reducers_post__WEBPACK_IMPORTED_MODULE_1__["LOAD_USER_POST_REQUEST"], loadUserPosts);
+}
+
 function addCommentAPI() {}
 
 function* addComment(action) {
@@ -3157,7 +3203,7 @@ function* watchAddComment() {
 }
 
 function* postSaga() {
-  yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["all"])([Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["fork"])(watchAddPost), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["fork"])(watchLoadMainPosts), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["fork"])(watchAddComment)]);
+  yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["all"])([Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["fork"])(watchAddPost), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["fork"])(watchLoadMainPosts), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["fork"])(watchAddComment), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["fork"])(watchLoadHashtagPosts), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["fork"])(watchLoadUserPosts)]);
 }
 
 /***/ }),
@@ -3256,18 +3302,21 @@ function* watchLogOut() {
   yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["takeEvery"])(_reducers_user__WEBPACK_IMPORTED_MODULE_2__["LOG_OUT_REQUEST"], logOut);
 }
 
-function loadUserAPI(signUpData) {
-  return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get('/user/', {
+function loadUserAPI(userId) {
+  return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(userId ? `/user/${userId}` : '/user/', {
     withCredentials: true
   });
 }
 
-function* loadUser() {
+function* loadUser(action) {
+  //자신에 대한 정보 + 남의 정보 같이
   try {
-    const result = yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["call"])(loadUserAPI);
+    const result = yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["call"])(loadUserAPI, action.data);
     yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["put"])({
       type: _reducers_user__WEBPACK_IMPORTED_MODULE_2__["LOAD_USER_SUCCESS"],
-      data: result.data
+      data: result.data,
+      me: !action.data //action.data가 userId - 만약 userId가 있으면 남, userId가 없으면 내 정보 불러온다
+
     });
   } catch (e) {
     console.error(e);

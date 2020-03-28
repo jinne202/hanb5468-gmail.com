@@ -9,7 +9,7 @@ import withRedux from 'next-redux-wrapper';
 import reducer from '../reducers';
 import rootSaga from '../sagas';
 
-const NodeBird = ({ Component, store }) => {
+const NodeBird = ({ Component, store, pageProps }) => {
     return (
         // provider이 가장 최상위 부모라 그 아래 자식들이 provider에 접근할 수 있음
         <Provider store = {store}>
@@ -18,15 +18,28 @@ const NodeBird = ({ Component, store }) => {
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/3.26.9/antd.css"/>
             </Head>
             <AppLayout>
-                <Component/>
+                <Component {...pageProps} />
             </AppLayout>
         </Provider>
     )
 };
 
+
 NodeBird.propTypes = {
     Component : PropTypes.elementType,
     store : PropTypes.object,
+    pageProps: PropTypes.object.isRequired,
+};
+
+// next에서 실행시켜주는 부분
+NodeBird.getInitialProps = async (context) => {
+    console.log(context);
+    const { ctx, Component } = context;
+    let pageProps = {};
+    if (Component.getInitialProps) {
+        pageProps = await Component.getInitialProps(ctx);
+    }
+    return { pageProps };
 };
 
 // 고차 컴포넌트라고 부름 기존 component의 기능을 확장해준다. withRedux라는게 Nodebird component에 props로 store을 넣어주는 역할을 한다. 그 store을 어떻게 넣어줄지를 적어야 함
