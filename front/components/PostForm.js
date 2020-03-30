@@ -20,18 +20,20 @@ const PostForm = () => {
     if(!text || !text.trim()){
       return alert('게시글을 작성하세요');
     }
+    const formData = new FormData();
+    imagePaths.forEach((i) => {
+      formData.append('image', i);
+    });
+    formData.append('content', text);
     dispatch({
       type : ADD_POST_REQUEST,
-      data : {
-        content : text,
-      }
-    })
-  }, [text]);
+      data : formData
+    });
+  }, [text, imagePaths]);
 
   const onChangeText = useCallback((e) => {
     setText(e.target.value);
   }, []);
-  
   // ajax 사용해서 form data 전송
   const onChangeImage = useCallback((e) => {
     console.log(e.target.files);

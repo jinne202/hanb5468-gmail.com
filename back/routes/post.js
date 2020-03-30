@@ -5,7 +5,22 @@ const db = require('../models');
 const { isLoggedIn } = require('./middleware');
 const router = express.Router();
 
-router.post('/', isLoggedIn, async (req, res, next) => {
+// 멀터를 설정해줌 옵션 살펴보기
+const upload = multer({
+    storage : multer.diskStorage({ //서버쪽 ssd에다가 저장하겠다
+        destination(req, file, done) { //파일이 저장될 위치
+            done(null, 'uploads');
+        },
+        filename(req, file, done) {
+            const ext = path.extname(file.originalname); //확장자 추출
+            const basename = path.basename(file.originalname, ext); //확장자 제외한 basename 추출
+            done(null, basename + new Date().valueOf() + ext); //파일명이 같더라도 업로드한 시간을 같이 넣어 덮어씌워지지 않게 방지
+        },
+    }),
+    limits : { fileSize : 20 * 1024 * 1024 }, //이미지 업로드 크기 제한
+});
+
+router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
     try {
         const hashtags = req.body.content.match(/#[^\s]+/g);
         const newPost = await db.Post.create({
@@ -20,10 +35,23 @@ router.post('/', isLoggedIn, async (req, res, next) => {
             // post에 해쉬태그 만든 것들을 연결해준다
             await newPost.addHashtags(result.map(r => r[0]));
         }
+        if (req.body.image) { // 이미지 주소를 여러개 올리면 image: [주소1, 주소2]
+            if (Array.isArray(req.body.image)) {
+              const images = await Promise.all(req.body.image.map((image) => {
+                return db.Image.create({ src: image });
+              }));
+              await newPost.addImages(images);
+            } else { // 이미지를 하나만 올리면 image: 주소1
+              const image = await db.Image.create({ src: req.body.image });
+              await newPost.addImage(image);
+            }
+          }
         const fullPost = await db.Post.findOne({
             where : { id : newPost.id },
             include: [{
-                    model: db.User,
+                model: db.User,
+            }, {
+                model : db.Image,
             }],
         });
         res.json(fullPost);
@@ -31,21 +59,6 @@ router.post('/', isLoggedIn, async (req, res, next) => {
         console.error(e);
         return next(e);
     }
-});
-
-// 멀터를 설정해줌 옵션 살펴보기
-const upload = multer({
-    storage : multer.diskStorage({ //서버쪽 ssd에다가 저장하겠다
-        destination(req, file, done) { //파일이 저장될 위치
-            done(null, 'uploads');
-        },
-        filename(req, file, done) {
-            const ext = path.extname(file.originalname); //확장자 추출
-            const basename = path.basename(file.originalname, ext); //확장자 제외한 basename 추출
-            done(null, basename + new Date().valueOf() + ext); //파일명이 같더라도 업로드한 시간을 같이 넣어 덮어씌워지지 않게 방지
-        },
-    }),
-    limits : { fileSize : 20 * 1024 * 1024 }, //이미지 업로드 크기 제한
 });
 
 router.post('/images', upload.array('image'), (req, res, next) => {

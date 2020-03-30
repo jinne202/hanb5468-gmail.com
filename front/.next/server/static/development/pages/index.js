@@ -93,6 +93,128 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
+/***/ "./components/ImagesZoom.js":
+/*!**********************************!*\
+  !*** ./components/ImagesZoom.js ***!
+  \**********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! prop-types */ "prop-types");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! antd */ "antd");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(antd__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _PostImages__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./PostImages */ "./components/PostImages.js");
+/* harmony import */ var react_slick__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-slick */ "react-slick");
+/* harmony import */ var react_slick__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_slick__WEBPACK_IMPORTED_MODULE_4__);
+var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
+
+
+
+
+
+const ImagesZoom = ({
+  images,
+  onClose
+}) => {
+  const {
+    0: currentSlide,
+    1: setCurrentSlide
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0);
+  return __jsx("div", {
+    style: {
+      position: 'fixed',
+      zIndex: 5000,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0
+    }
+  }, __jsx("header", {
+    style: {
+      height: 44,
+      background: 'white',
+      position: 'relative',
+      padding: 0,
+      textAlign: 'center'
+    }
+  }, __jsx("h1", {
+    style: {
+      margin: 0,
+      fontSize: '17px',
+      color: '#333',
+      lineHeight: '44px'
+    }
+  }, "Image"), __jsx(antd__WEBPACK_IMPORTED_MODULE_2__["Icon"], {
+    type: "close",
+    onClick: onClose,
+    style: {
+      position: 'absolute',
+      right: '0',
+      top: '0',
+      padding: '15px',
+      lineHeight: '14px',
+      cursor: 'pointer'
+    }
+  })), __jsx("div", {
+    style: {
+      height: 'calc(100% - 44px)',
+      background: '#090909'
+    }
+  }, __jsx(react_slick__WEBPACK_IMPORTED_MODULE_4___default.a, {
+    initialSlide: 0 //몇번째 이미지를 처음으로 보여줄지
+    ,
+    afterChange: slide => setCurrentSlide(slide),
+    infinite: false,
+    arrows: true,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  }, images.map(v => {
+    return __jsx("div", {
+      style: {
+        padding: '32px',
+        textAlign: 'center'
+      }
+    }, __jsx("img", {
+      src: `http://localhost:7070/${v.src}`,
+      style: {
+        margin: '0 auto',
+        maxHeight: '750px'
+      }
+    }));
+  })), __jsx("div", {
+    style: {
+      textAlign: 'center'
+    }
+  }, __jsx("div", {
+    style: {
+      width: 75,
+      height: 30,
+      lineHeight: '30px',
+      background: '#313131',
+      display: 'inline-block',
+      textAlign: 'center',
+      color: 'white',
+      fontSize: '15px'
+    }
+  }, currentSlide + 1, " / ", images.length))));
+};
+
+ImagesZoom.propTypes = {
+  images: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.shape({
+    src: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.string
+  })).isRequired,
+  onClose: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.func.isRequired
+};
+/* harmony default export */ __webpack_exports__["default"] = (ImagesZoom);
+
+/***/ }),
+
 /***/ "./components/PostCard.js":
 /*!********************************!*\
   !*** ./components/PostCard.js ***!
@@ -113,7 +235,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-redux */ "react-redux");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_redux__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _reducers_post__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../reducers/post */ "./reducers/post.js");
+/* harmony import */ var _PostImages__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./PostImages */ "./components/PostImages.js");
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
 
 
 
@@ -176,10 +300,10 @@ const PostCard = ({
     style: {
       margin: '40px 0 0'
     },
-    key: +post.createdAT,
-    cover: post.img && __jsx("img", {
-      alt: "example",
-      src: post.img
+    key: +post.createdAT // cover = {post.Images[0] && <img alt="example" src={`http://localhost:7070/` + post.Images[0].src}/>}
+    ,
+    cover: post.Images[0] && __jsx(_PostImages__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      images: post.Images
     }),
     actions: [__jsx(antd__WEBPACK_IMPORTED_MODULE_3__["Icon"], {
       type: "retweet",
@@ -311,13 +435,16 @@ const PostForm = () => {
       return alert('게시글을 작성하세요');
     }
 
+    const formData = new FormData();
+    imagePaths.forEach(i => {
+      formData.append('image', i);
+    });
+    formData.append('content', text);
     dispatch({
       type: _reducers_post__WEBPACK_IMPORTED_MODULE_3__["ADD_POST_REQUEST"],
-      data: {
-        content: text
-      }
+      data: formData
     });
-  }, [text]);
+  }, [text, imagePaths]);
   const onChangeText = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(e => {
     setText(e.target.value);
   }, []); // ajax 사용해서 form data 전송
@@ -387,6 +514,96 @@ const PostForm = () => {
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (PostForm);
+
+/***/ }),
+
+/***/ "./components/PostImages.js":
+/*!**********************************!*\
+  !*** ./components/PostImages.js ***!
+  \**********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! prop-types */ "prop-types");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! antd */ "antd");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(antd__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _ImagesZoom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ImagesZoom */ "./components/ImagesZoom.js");
+var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
+
+
+
+
+const PostImages = ({
+  images
+}) => {
+  const {
+    0: showImagesZoom,
+    1: setShowImagesZoom
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false);
+  const onZoom = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(() => {
+    setShowImagesZoom(true);
+  }, []);
+  const onClose = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(() => {
+    setShowImagesZoom(false);
+  }, []);
+
+  if (images.length === 1) {
+    return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx("img", {
+      src: `http://localhost:7070/${images[0].src}`,
+      onClick: onZoom
+    }), showImagesZoom && __jsx(_ImagesZoom__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      images: images,
+      onClose: onClose
+    }));
+  }
+
+  if (images.length === 2) {
+    return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx("div", null, __jsx("img", {
+      src: `http://localhost:7070/${images[0].src}`,
+      width: "50%",
+      onClick: onZoom
+    }), __jsx("img", {
+      src: `http://localhost:7070/${images[1].src}`,
+      width: "50%",
+      onClick: onZoom
+    })), showImagesZoom && __jsx(_ImagesZoom__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      images: images,
+      onClose: onClose
+    }));
+  }
+
+  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx("div", null, __jsx("img", {
+    src: `http://localhost:7070/${images[0].src}`,
+    width: "50%",
+    onClick: onZoom
+  }), __jsx("div", {
+    style: {
+      display: 'inline-block',
+      width: '50%',
+      textAlign: 'center',
+      verticalAlign: 'middle'
+    },
+    onClick: onZoom
+  }, __jsx(antd__WEBPACK_IMPORTED_MODULE_2__["Icon"], {
+    type: "plus"
+  }), __jsx("br", null), images.length - 1, "\xA0IMAGE SHOW MORE")), showImagesZoom && __jsx(_ImagesZoom__WEBPACK_IMPORTED_MODULE_3__["default"], {
+    images: images,
+    onClose: onClose
+  }));
+};
+
+PostImages.propTypes = {
+  images: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.shape({
+    src: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.string
+  })).isRequired
+};
+/* harmony default export */ __webpack_exports__["default"] = (PostImages);
 
 /***/ }),
 
@@ -2250,7 +2467,8 @@ const reducer = (state = initialState, action) => {
         return _objectSpread({}, state, {
           isAddingPost: false,
           mainPosts: [action.data, ...state.mainPosts],
-          postAdded: true
+          postAdded: true,
+          imagePaths: []
         });
       }
 
@@ -2655,6 +2873,17 @@ module.exports = require("react-is");
 /***/ (function(module, exports) {
 
 module.exports = require("react-redux");
+
+/***/ }),
+
+/***/ "react-slick":
+/*!******************************!*\
+  !*** external "react-slick" ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("react-slick");
 
 /***/ }),
 
