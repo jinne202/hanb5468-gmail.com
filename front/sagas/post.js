@@ -1,5 +1,6 @@
 import { all, fork, takeLatest, delay, put, call } from 'redux-saga/effects'
-import { ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, LOAD_MAIN_POST_SUCCESS, LOAD_MAIN_POST_FAILURE, LOAD_MAIN_POST_REQUEST, LOAD_HASHTAG_POSTS_SUCCESS, LOAD_HASHTAG_POSTS_FAILURE, LOAD_HASHTAG_POSTS_REQUEST, LOAD_USER_POST_SUCCESS, LOAD_USER_POST_FAILURE, LOAD_USER_POST_REQUEST, LOAD_COMMENT_SUCCESS, LOAD_COMMENT_FAILURE, LOAD_COMMENT_REQUEST, UPLOAD_IMAGE_SUCCESS, UPLOAD_IMAGE_FAILURE, UPLOAD_IMAGE_REQUEST } from '../reducers/post';
+import { ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, LOAD_MAIN_POST_SUCCESS, LOAD_MAIN_POST_FAILURE, LOAD_MAIN_POST_REQUEST, LOAD_HASHTAG_POSTS_SUCCESS, LOAD_HASHTAG_POSTS_FAILURE, LOAD_HASHTAG_POSTS_REQUEST, LOAD_USER_POST_SUCCESS, LOAD_USER_POST_FAILURE, LOAD_USER_POST_REQUEST, LOAD_COMMENT_SUCCESS, LOAD_COMMENT_FAILURE, LOAD_COMMENT_REQUEST, UPLOAD_IMAGE_SUCCESS, UPLOAD_IMAGE_FAILURE, UPLOAD_IMAGE_REQUEST, LIKE_POST_SUCCESS, LIKE_POST_FAILURE, LIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UNLIKE_POST_FAILURE, UNLIKE_POST_REQUEST, RETWEET_SUCCESS, RETWEET_FAILURE, RETWEET_REQUEST } from '../reducers/post';
+import { ADD_POST_TO_ME } from '../reducers/user';
 import axios from 'axios';
 
 function addPostAPI(postData){
@@ -11,9 +12,13 @@ function addPostAPI(postData){
 function* addPost(action){
     try {
         const result = yield call(addPostAPI, action.data);
-        yield put({
+        yield put({ //post reducer data 수정
             type : ADD_POST_SUCCESS,
             data : result.data,
+        });
+        yield put({ //user reducer data 수정
+            type : ADD_POST_TO_ME,
+            data : result.data.id,
         });
     } catch (e) {
         console.error(e);
@@ -182,6 +187,91 @@ function* watchUploadImages(){
     yield takeLatest(UPLOAD_IMAGE_REQUEST, uploadImages);
 }
 
+function likePostAPI(postId){
+    return axios.post(`/post/${postId}/like`, {}, {
+        withCredentials : true,
+    });
+}
+
+function* likePost(action){
+    try {
+        const result = yield call(likePostAPI, action.data);
+        yield put({
+            type : LIKE_POST_SUCCESS,
+            data : {
+                postId : action.data,
+                userId : result.data.userId,
+            },
+        });
+    } catch (e) {
+        console.error(e);
+        yield put({
+            type : LIKE_POST_FAILURE,
+            error : e,
+        });
+    }
+}
+
+function* watchLikePost(){
+    yield takeLatest(LIKE_POST_REQUEST, likePost);
+}
+
+function unlikePostAPI(postId){
+    return axios.delete(`/post/${postId}/like`, {
+        withCredentials : true,
+    });
+}
+
+function* unlikePost(action){
+    try {
+        const result = yield call(unlikePostAPI, action.data);
+        yield put({
+            type : UNLIKE_POST_SUCCESS,
+            data : {
+                postId : action.data,
+                userId : result.data.userId,
+            },
+        });
+    } catch (e) {
+        console.error(e);
+        yield put({
+            type : UNLIKE_POST_FAILURE,
+            error : e,
+        });
+    }
+}
+
+function* watchUnlikePost(){
+    yield takeLatest(UNLIKE_POST_REQUEST, unlikePost);
+}
+
+function retweetAPI(postId){
+    return axios.post(`/post/${postId}/retweet`, {}, { //post 만들때 data 없더라도 data 칸에 빈 객체
+        withCredentials : true,
+    });
+}
+
+function* retweet(action){
+    try {
+        const result = yield call(retweetAPI, action.data);
+        yield put({
+            type : RETWEET_SUCCESS,
+            data : result.data,
+        });
+    } catch (e) {
+        console.error(e);
+        yield put({
+            type : RETWEET_FAILURE,
+            error : e,
+        });
+        alert(e.response && e.response.data);
+    }
+}
+
+function* watchRetweet(){
+    yield takeLatest(RETWEET_REQUEST, retweet);
+}
+
 
 
 export default function* postSaga(){
@@ -193,5 +283,8 @@ export default function* postSaga(){
         fork(watchLoadHashtagPosts),
         fork(watchLoadUserPosts),
         fork(watchUploadImages),
+        fork(watchLikePost),
+        fork(watchUnlikePost),
+        fork(watchRetweet),
     ]);
 }
